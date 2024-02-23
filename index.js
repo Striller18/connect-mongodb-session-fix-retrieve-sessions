@@ -156,19 +156,14 @@ module.exports = function(connect) {
       });
     }
 
-    this.db.collection(this.options.collection).
-      find({}).toArray(function(error, sessions) {
-        if (error) {
-          const e = new Error('Error gathering sessions');
-          return _this._errorHandler(e, callback);
-        } else if (sessions) {
-          if (sessions) {
-            return callback(null, sessions);
-          }
-        } else {
-          return callback();
-        }
-      });
+    this.db.collection(this.options.collection).find({}).toArray()
+    .then( sessions => {
+      return callback(null, sessions);
+    })
+    .catch( error =>{
+      const e = new Error('Error finding sessions: ' + error.message);
+      return _this._errorHandler(e, callback);
+    })
   };
 
   MongoDBStore.prototype.destroy = function(id, callback) {
